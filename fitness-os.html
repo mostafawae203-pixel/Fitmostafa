@@ -1,0 +1,1546 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MOSLA FIT — نظامك الشخصي</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cairo:wght@300;400;600;700;900&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8C97A;
+    --gold-dim: #8B6E2E;
+    --black: #080808;
+    --dark: #0E0E0E;
+    --card: #141414;
+    --card2: #1A1A1A;
+    --border: #2A2A2A;
+    --text: #E8E8E8;
+    --muted: #666;
+    --success: #4CAF88;
+    --danger: #E05555;
+    --accent: #C9A84C;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--black);
+    color: var(--text);
+    font-family: 'Cairo', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grain overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.4;
+  }
+
+  /* Header */
+  .header {
+    padding: 20px 24px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 16px;
+  }
+
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 4px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-light), var(--gold-dim));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .header-right {
+    text-align: left;
+  }
+
+  .greeting {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .user-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--gold-light);
+  }
+
+  /* Streak banner */
+  .streak-banner {
+    margin: 16px 24px;
+    background: linear-gradient(135deg, #1A1500, #2A2000);
+    border: 1px solid var(--gold-dim);
+    border-radius: 12px;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .streak-banner::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+
+  .streak-fire {
+    font-size: 32px;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+  }
+
+  .streak-info h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 2px;
+    color: var(--gold);
+  }
+
+  .streak-info p {
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .streak-days {
+    margin-right: auto;
+    text-align: left;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 42px;
+    color: var(--gold-light);
+    line-height: 1;
+  }
+
+  .streak-days span {
+    display: block;
+    font-family: 'Cairo', sans-serif;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+
+  /* Nav */
+  .nav {
+    display: flex;
+    padding: 0 24px;
+    gap: 4px;
+    margin-bottom: 20px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .nav::-webkit-scrollbar { display: none; }
+
+  .nav-btn {
+    flex-shrink: 0;
+    padding: 8px 16px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Cairo', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .nav-btn.active {
+    background: var(--gold);
+    color: var(--black);
+    border-color: var(--gold);
+  }
+
+  /* Sections */
+  .section { display: none; padding: 0 24px; }
+  .section.active { display: block; }
+
+  /* Cards */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card-gold {
+    border-color: var(--gold-dim);
+    background: linear-gradient(135deg, #141200, #1A1800);
+  }
+
+  .card-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 2px;
+    color: var(--gold);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* Today's workout */
+  .day-label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    letter-spacing: 3px;
+    color: var(--gold-light);
+    line-height: 1;
+  }
+
+  .day-focus {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+
+  .exercise-list { list-style: none; }
+
+  .exercise-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .exercise-item:last-child { border-bottom: none; }
+
+  .exercise-item.done .exercise-name {
+    color: var(--muted);
+    text-decoration: line-through;
+  }
+
+  .exercise-check {
+    width: 22px;
+    height: 22px;
+    border: 2px solid var(--border);
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+
+  .exercise-item.done .exercise-check {
+    background: var(--gold);
+    border-color: var(--gold);
+  }
+
+  .exercise-name {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .exercise-meta {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'Rajdhani', sans-serif;
+    letter-spacing: 1px;
+  }
+
+  /* Progress bar */
+  .progress-wrap {
+    background: var(--border);
+    border-radius: 4px;
+    height: 4px;
+    margin-top: 16px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold-dim), var(--gold));
+    border-radius: 4px;
+    transition: width 0.5s ease;
+  }
+
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 6px;
+  }
+
+  /* Split grid */
+  .split-grid {
+    display: grid;
+    gap: 8px;
+  }
+
+  .split-day {
+    display: flex;
+    align-items: center;
+    padding: 10px 14px;
+    background: var(--card2);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .split-day.today {
+    border-color: var(--gold);
+    background: linear-gradient(135deg, #1A1400, #221C00);
+  }
+
+  .split-day-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    color: var(--gold);
+    width: 28px;
+  }
+
+  .split-day-info { flex: 1; }
+
+  .split-day-name {
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .split-day-sub {
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .split-day-icon { font-size: 20px; }
+
+  /* Editable field */
+  .edit-field {
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .edit-field label {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 600;
+    min-width: 100px;
+  }
+
+  .edit-field input, .edit-field select {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text);
+    font-family: 'Cairo', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    text-align: left;
+    outline: none;
+    direction: ltr;
+  }
+
+  .edit-field select option { background: var(--dark); }
+
+  .edit-btn {
+    background: none;
+    border: 1px solid var(--gold-dim);
+    color: var(--gold);
+    padding: 4px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 11px;
+    font-family: 'Cairo', sans-serif;
+    transition: all 0.2s;
+  }
+
+  .edit-btn:hover { background: var(--gold); color: var(--black); }
+
+  /* Supplement timeline */
+  .supp-timeline { position: relative; }
+
+  .supp-time-block {
+    margin-bottom: 20px;
+  }
+
+  .supp-time-label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 14px;
+    letter-spacing: 2px;
+    color: var(--gold);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .supp-time-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .supp-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .supp-pill {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+
+  .supp-pill.taken {
+    opacity: 0.4;
+  }
+
+  .supp-pill.morning { border-color: #E8C97A40; color: #E8C97A; background: #E8C97A10; }
+  .supp-pill.pre { border-color: #E0553340; color: #E07755; background: #E0553310; }
+  .supp-pill.post { border-color: #4CAF8840; color: #4CAF88; background: #4CAF8810; }
+  .supp-pill.night { border-color: #6B7FE040; color: #8B9FFF; background: #6B7FE010; }
+
+  /* Stats */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .stat-card {
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+  }
+
+  .stat-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    color: var(--gold);
+    line-height: 1;
+  }
+
+  .stat-unit {
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .stat-label {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  /* Mini chart */
+  .mini-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
+    height: 60px;
+    margin-top: 12px;
+  }
+
+  .chart-bar {
+    flex: 1;
+    background: var(--border);
+    border-radius: 3px 3px 0 0;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .chart-bar-fill {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(180deg, var(--gold-light), var(--gold-dim));
+    border-radius: 3px 3px 0 0;
+    transition: height 0.5s ease;
+  }
+
+  .chart-bar.today .chart-bar-fill { background: linear-gradient(180deg, #FFD700, var(--gold)); }
+
+  .chart-labels {
+    display: flex;
+    gap: 4px;
+    margin-top: 4px;
+  }
+
+  .chart-label {
+    flex: 1;
+    text-align: center;
+    font-size: 9px;
+    color: var(--muted);
+    font-family: 'Rajdhani', sans-serif;
+  }
+
+  /* Meal section */
+  .meal-card {
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .meal-card.done {
+    opacity: 0.5;
+    border-color: var(--success);
+  }
+
+  .meal-time {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 16px;
+    color: var(--gold);
+    min-width: 50px;
+    letter-spacing: 1px;
+  }
+
+  .meal-info { flex: 1; }
+
+  .meal-name {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 3px;
+  }
+
+  .meal-detail {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .meal-macros {
+    text-align: left;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 11px;
+    color: var(--gold-dim);
+    letter-spacing: 1px;
+  }
+
+  /* Alarm section */
+  .alarm-card {
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .alarm-time {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px;
+    color: var(--text);
+    letter-spacing: 2px;
+  }
+
+  .alarm-label { flex: 1; }
+  .alarm-name { font-size: 13px; font-weight: 600; }
+  .alarm-sub { font-size: 11px; color: var(--muted); }
+
+  .toggle {
+    width: 44px;
+    height: 24px;
+    background: var(--border);
+    border-radius: 12px;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s;
+    flex-shrink: 0;
+  }
+
+  .toggle.on { background: var(--gold); }
+
+  .toggle::after {
+    content: '';
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    background: white;
+    border-radius: 50%;
+    top: 3px;
+    left: 3px;
+    transition: all 0.3s;
+  }
+
+  .toggle.on::after { left: 23px; }
+
+  /* Macros ring */
+  .macros-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .macro-item {
+    flex: 1;
+    background: var(--card2);
+    border-radius: 10px;
+    padding: 10px 8px;
+    text-align: center;
+  }
+
+  .macro-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    color: var(--gold);
+  }
+
+  .macro-label {
+    font-size: 10px;
+    color: var(--muted);
+  }
+
+  /* Save button */
+  .save-btn {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, var(--gold-dim), var(--gold));
+    border: none;
+    border-radius: 12px;
+    color: var(--black);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 3px;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: all 0.2s;
+  }
+
+  .save-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+  .save-btn:active { transform: translateY(0); }
+
+  /* Motivational quote */
+  .quote-card {
+    background: linear-gradient(135deg, #0A0800, #151000);
+    border: 1px solid var(--gold-dim);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 16px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .quote-card::before {
+    content: '"';
+    position: absolute;
+    top: -10px;
+    right: 20px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 120px;
+    color: var(--gold);
+    opacity: 0.06;
+    line-height: 1;
+  }
+
+  .quote-text {
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.6;
+    color: var(--gold-light);
+  }
+
+  .quote-author {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 8px;
+    font-family: 'Rajdhani', sans-serif;
+    letter-spacing: 1px;
+  }
+
+  /* Weight input */
+  .weight-input-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .weight-input-row input {
+    flex: 1;
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    color: var(--text);
+    font-family: 'Cairo', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    outline: none;
+    direction: ltr;
+  }
+
+  .weight-input-row input:focus { border-color: var(--gold-dim); }
+
+  /* Notification */
+  .notif {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--gold);
+    color: var(--black);
+    padding: 12px 24px;
+    border-radius: 100px;
+    font-weight: 700;
+    font-size: 14px;
+    z-index: 9998;
+    transition: transform 0.3s ease;
+    white-space: nowrap;
+  }
+
+  .notif.show { transform: translateX(-50%) translateY(0); }
+
+  /* Bottom padding */
+  .bottom-pad { height: 40px; }
+
+  /* Animations */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section.active > * {
+    animation: fadeIn 0.3s ease forwards;
+  }
+
+  /* Workout timer */
+  .timer-display {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 56px;
+    color: var(--gold);
+    text-align: center;
+    letter-spacing: 4px;
+    line-height: 1;
+  }
+
+  .timer-controls {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+  }
+
+  .timer-btn {
+    flex: 1;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--card2);
+    color: var(--text);
+    font-family: 'Cairo', sans-serif;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .timer-btn.primary { background: var(--gold); color: var(--black); border-color: var(--gold); }
+  .timer-btn:hover { opacity: 0.85; }
+
+  .week-progress {
+    display: flex;
+    gap: 6px;
+    margin-top: 12px;
+  }
+
+  .week-dot {
+    flex: 1;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--border);
+    transition: background 0.3s;
+  }
+
+  .week-dot.done { background: var(--gold); }
+  .week-dot.today { background: var(--gold-light); animation: pulse 1.5s ease-in-out infinite; }
+
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">MOSLA FIT</div>
+  <div class="header-right">
+    <div class="greeting">WELCOME BACK</div>
+    <div class="user-name">مصطفى 💪</div>
+  </div>
+</div>
+
+<div class="streak-banner">
+  <div class="streak-fire">🔥</div>
+  <div class="streak-info">
+    <h3>STREAK ACTIVE</h3>
+    <p>استمر — كل يوم بيفرق</p>
+  </div>
+  <div class="streak-days">
+    <span id="streakNum">1</span>
+    <span>DAYS</span>
+  </div>
+</div>
+
+<div class="nav">
+  <button class="nav-btn active" onclick="showSection('home')">🏠 اليوم</button>
+  <button class="nav-btn" onclick="showSection('training')">🏋️ التمرين</button>
+  <button class="nav-btn" onclick="showSection('nutrition')">🥗 الأكل</button>
+  <button class="nav-btn" onclick="showSection('supplements')">💊 المكملات</button>
+  <button class="nav-btn" onclick="showSection('stats')">📊 الإحصائيات</button>
+  <button class="nav-btn" onclick="showSection('alarms')">⏰ التنبيهات</button>
+</div>
+
+<!-- HOME -->
+<div class="section active" id="home">
+
+  <div class="quote-card">
+    <div class="quote-text" id="quoteText">الجسم بيتحول كل يوم — الفرق بس إنك تظهر أو لا.</div>
+    <div class="quote-author">MOSLA FIT MOTIVATION</div>
+  </div>
+
+  <div class="card card-gold">
+    <div class="card-title">🗓️ <span id="todayDayName">تمرين اليوم</span></div>
+    <div class="day-label" id="todayDay">PUSH A</div>
+    <div class="day-focus" id="todayFocus">صدر + تراي سبس</div>
+
+    <ul class="exercise-list" id="todayExercises"></ul>
+
+    <div class="progress-wrap">
+      <div class="progress-fill" id="workoutProgress" style="width:0%"></div>
+    </div>
+    <div class="progress-label">
+      <span id="doneCount">0 تمارين مكتملة</span>
+      <span id="progressPct">0%</span>
+    </div>
+  </div>
+
+  <!-- Workout timer -->
+  <div class="card">
+    <div class="card-title">⏱️ مؤقت الراحة</div>
+    <div class="timer-display" id="timerDisplay">01:30</div>
+    <div class="timer-controls">
+      <button class="timer-btn" onclick="setTimer(60)">60s</button>
+      <button class="timer-btn" onclick="setTimer(90)">90s</button>
+      <button class="timer-btn" onclick="setTimer(120)">2m</button>
+      <button class="timer-btn" onclick="setTimer(180)">3m</button>
+      <button class="timer-btn primary" id="timerStartBtn" onclick="toggleTimer()">▶ ابدأ</button>
+    </div>
+  </div>
+
+  <!-- Week progress -->
+  <div class="card">
+    <div class="card-title">📅 الأسبوع</div>
+    <div class="week-progress" id="weekDots"></div>
+    <div style="display:flex;gap:4px;margin-top:6px" id="weekLabels"></div>
+  </div>
+
+  <div class="bottom-pad"></div>
+</div>
+
+<!-- TRAINING -->
+<div class="section" id="training">
+  <div class="card">
+    <div class="card-title">🗓️ الـ Split الأسبوعي</div>
+    <div class="split-grid" id="splitGrid"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">⚡ الـ Progressive Overload</div>
+    <div id="phaseInfo" style="font-size:13px;line-height:1.8;color:var(--muted)"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🏃 الكارديو</div>
+    <div style="font-size:13px;line-height:1.9;color:var(--muted)">
+      <div style="margin-bottom:8px;color:var(--text);font-weight:700">الأسبوع ده:</div>
+      🔴 HIIT — بعد التمرين الثلاثاء والجمعة (15-20 دقيقة)<br>
+      🟡 LISS — مشي سريع الصبح الصايم (30-40 دقيقة) × 3<br>
+      <br>
+      <div style="color:var(--gold);font-size:11px">💡 المشي الصايم = أعلى حرق للدهون بالبطن تحديداً</div>
+    </div>
+  </div>
+
+  <div class="bottom-pad"></div>
+</div>
+
+<!-- NUTRITION -->
+<div class="section" id="nutrition">
+
+  <div class="card card-gold">
+    <div class="card-title">🎯 هدف الكالوري</div>
+    <div style="text-align:center;margin-bottom:12px">
+      <div class="day-label" id="calTarget">2,350</div>
+      <div style="font-size:12px;color:var(--muted)">سعرة / يوم — عجز بسيط لحرق الدهون</div>
+    </div>
+    <div class="macros-row">
+      <div class="macro-item">
+        <div class="macro-val" id="macroP">180</div>
+        <div class="macro-label">بروتين (g)</div>
+      </div>
+      <div class="macro-item">
+        <div class="macro-val" id="macroC">235</div>
+        <div class="macro-label">كارب (g)</div>
+      </div>
+      <div class="macro-item">
+        <div class="macro-val" id="macroF">70</div>
+        <div class="macro-label">دهون (g)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🍽️ وجبات اليوم</div>
+    <div id="mealList"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">✏️ تعديل الماكروز</div>
+    <div class="edit-field">
+      <label>كالوري</label>
+      <input type="number" id="editCal" value="2350" dir="ltr">
+      <button class="edit-btn" onclick="updateMacros()">حفظ</button>
+    </div>
+    <div class="edit-field">
+      <label>بروتين (g)</label>
+      <input type="number" id="editP" value="180" dir="ltr">
+    </div>
+    <div class="edit-field">
+      <label>كارب (g)</label>
+      <input type="number" id="editC" value="235" dir="ltr">
+    </div>
+    <div class="edit-field">
+      <label>دهون (g)</label>
+      <input type="number" id="editF" value="70" dir="ltr">
+    </div>
+    <button class="save-btn" onclick="updateMacros()">حفظ التغييرات</button>
+  </div>
+
+  <div class="bottom-pad"></div>
+</div>
+
+<!-- SUPPLEMENTS -->
+<div class="section" id="supplements">
+
+  <div class="card">
+    <div class="card-title">⏰ وقت التمرين</div>
+    <div class="edit-field">
+      <label>بيتمرن</label>
+      <select id="workoutTime" onchange="updateSuppSchedule()">
+        <option value="morning" selected>الصبح (بعد الفطار)</option>
+        <option value="afternoon">الضهر</option>
+        <option value="evening">المساء</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">💊 جدول المكملات</div>
+    <div class="supp-timeline" id="suppTimeline"></div>
+  </div>
+
+  <div class="bottom-pad"></div>
+</div>
+
+<!-- STATS -->
+<div class="section" id="stats">
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-val" id="currentWeight">74</div>
+      <div class="stat-unit">kg</div>
+      <div class="stat-label">الوزن الحالي</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" id="totalSessions">0</div>
+      <div class="stat-unit">جلسة</div>
+      <div class="stat-label">إجمالي التمارين</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" id="weekSessions">0</div>
+      <div class="stat-unit">/ 6</div>
+      <div class="stat-label">تمارين الأسبوع</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" id="bmi">24.4</div>
+      <div class="stat-unit">BMI</div>
+      <div class="stat-label">مؤشر الكتلة</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📈 الوزن — آخر 7 أيام</div>
+    <div class="mini-chart" id="weightChart"></div>
+    <div class="chart-labels" id="chartLabels"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">⚖️ سجّل وزنك</div>
+    <div class="weight-input-row">
+      <input type="number" id="newWeight" placeholder="74.0" step="0.1" dir="ltr">
+      <button class="save-btn" style="width:auto;padding:12px 20px;margin-top:0" onclick="logWeight()">+ سجّل</button>
+    </div>
+    <div id="weightHistory" style="font-size:12px;color:var(--muted);line-height:2"></div>
+  </div>
+
+  <div class="bottom-pad"></div>
+</div>
+
+<!-- ALARMS -->
+<div class="section" id="alarms">
+
+  <div class="card">
+    <div class="card-title">⏰ تنبيهات يومية</div>
+    <div id="alarmList"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">✏️ تعديل وقت التمرين</div>
+    <div class="edit-field">
+      <label>وقت التمرين</label>
+      <input type="time" id="workoutTimeInput" value="07:00" dir="ltr">
+      <button class="edit-btn" onclick="updateAlarmTimes()">تحديث</button>
+    </div>
+    <div class="edit-field">
+      <label>النوم</label>
+      <input type="time" id="sleepTimeInput" value="23:00" dir="ltr">
+    </div>
+    <button class="save-btn" onclick="updateAlarmTimes()">حفظ الجدول</button>
+  </div>
+
+  <div class="bottom-pad"></div>
+</div>
+
+<div class="notif" id="notif"></div>
+
+<script>
+// ========== DATA ==========
+const split = [
+  { day: 'الاثنين', name: 'PUSH A', focus: 'صدر + تراي سبس', icon: '💪', exercises: [
+    { name: 'Barbell Bench Press', meta: '4×5 — 3 دقيقة راحة' },
+    { name: 'Incline DB Press', meta: '3×10 — 2 دقيقة' },
+    { name: 'Cable Chest Fly', meta: '3×12 — 90 ثانية' },
+    { name: 'Diamond Push-ups', meta: '3×Max — 90 ثانية' },
+    { name: 'Tricep Rope Pushdown', meta: '3×12 — 60 ثانية' },
+    { name: 'Finisher: Close-grip Push-up', meta: '1×Max' },
+  ]},
+  { day: 'الثلاثاء', name: 'PULL A', focus: 'ظهر + بايسبس + HIIT', icon: '🦵', exercises: [
+    { name: 'Conventional Deadlift', meta: '4×5 — 4 دقيقة' },
+    { name: 'Barbell Bent-over Row', meta: '4×8 — 2.5 دقيقة' },
+    { name: 'Chest-supported DB Row', meta: '3×12 — 90 ثانية' },
+    { name: 'Barbell Curl', meta: '4×10 — 90 ثانية' },
+    { name: 'Incline DB Curl', meta: '3×12 — 60 ثانية' },
+    { name: 'Grip Finisher: Farmer Carry', meta: '3×30m' },
+  ]},
+  { day: 'الأربعاء', name: 'LEGS A', focus: 'رجل + Grip قوي', icon: '🦵', exercises: [
+    { name: 'Barbell Back Squat', meta: '4×5 — 3 دقيقة' },
+    { name: 'Romanian Deadlift', meta: '3×10 — 2 دقيقة' },
+    { name: 'Leg Press', meta: '3×15 — 90 ثانية' },
+    { name: 'Walking Lunges', meta: '3×12/رجل — 90 ثانية' },
+    { name: 'Calf Raise', meta: '4×20 — 60 ثانية' },
+    { name: 'Plate Pinch Hold', meta: '3×30 ثانية' },
+  ]},
+  { day: 'الخميس', name: 'PUSH B', focus: 'كتف + صدر + بوش آبس', icon: '🔺', exercises: [
+    { name: 'Barbell Overhead Press', meta: '4×6 — 3 دقيقة' },
+    { name: 'Arnold Press', meta: '3×10 — 90 ثانية' },
+    { name: 'Lateral Raise', meta: '4×15 — 60 ثانية' },
+    { name: 'Pike + Standard Push-up Superset', meta: '3×10+15' },
+    { name: 'Rear Delt Fly', meta: '3×15 — 60 ثانية' },
+    { name: 'Finisher: Push-up Ladder', meta: '10-8-6-4-2' },
+  ]},
+  { day: 'الجمعة', name: 'PULL B', focus: 'ظهر + بايسبس + HIIT', icon: '💥', exercises: [
+    { name: 'Weighted Pull-up', meta: '4×6 — 3 دقيقة' },
+    { name: 'Single-arm DB Row', meta: '3×10/جنب — 90 ثانية' },
+    { name: 'Seated Cable Row', meta: '3×12 — 90 ثانية' },
+    { name: 'Hammer Curl', meta: '4×12 — 60 ثانية' },
+    { name: 'Concentration Curl', meta: '3×12 — 60 ثانية' },
+    { name: 'Towel Pull-up / Dead Hang', meta: '3×Max' },
+  ]},
+  { day: 'السبت', name: 'LEGS B + ARMS', focus: 'رجل + دراع فينيشر', icon: '⚡', exercises: [
+    { name: 'Front Squat / Hack Squat', meta: '4×8 — 2.5 دقيقة' },
+    { name: 'Bulgarian Split Squat', meta: '3×10/رجل — 2 دقيقة' },
+    { name: 'Leg Curl', meta: '3×15 — 90 ثانية' },
+    { name: 'EZ-bar Curl + Skull Crusher', meta: '3×12+12 Superset' },
+    { name: 'Cable Curl + Overhead Ext.', meta: '3×15+15 Superset' },
+    { name: 'Finisher: 21s Barbell Curl', meta: '3 sets' },
+  ]},
+  { day: 'الأحد', name: 'REST', focus: 'راحة / مشي خفيف', icon: '🌿', exercises: [] },
+];
+
+const meals = [
+  { time: '7:00', name: 'الفطار', detail: '4-5 بيض كامل + 100g جبنة قليلة الدسم', macros: 'P:42g C:4g F:22g', cal: 390 },
+  { time: '10:30', name: 'سناك', detail: '30g مكسرات + 50g ترمس', macros: 'P:12g C:8g F:16g', cal: 220 },
+  { time: '12:30', name: 'قبل التمرين (Pre-WO)', detail: '150g أرز + 150g فراخ مشوية', macros: 'P:38g C:55g F:5g', cal: 420 },
+  { time: '15:00', name: 'بعد التمرين (Post-WO)', detail: 'كرياتين + موزة أو 3 تمرات', macros: 'P:0g C:28g F:0g', cal: 110 },
+  { time: '19:00', name: 'العشا', detail: '200g فراخ مشوية / سردين + سلطة + زيت زيتون', macros: 'P:45g C:6g F:18g', cal: 380 },
+  { time: '22:00', name: 'سناك الليل', detail: '200g لبن زبادي قليل الدسم + ملعقة عسل', macros: 'P:15g C:22g F:2g', cal: 165 },
+];
+
+const suppSchedules = {
+  morning: [
+    { time: 'مع الفطار', type: 'morning', items: ['Vitamin D 5000IU', 'Vitamin B12 1000mcg', 'Omega-3 2-3g', 'Zinc 25mg', 'Ginseng 500mg'] },
+    { time: 'بعد الفطار بـ 20 دقيقة (قبل التمرين)', type: 'pre', items: ['L-Citrulline 7g', 'Power Max (الجرعة)', 'Ashwagandha 500mg', 'Maca Root 2g'] },
+    { time: 'بعد التمرين فوراً', type: 'post', items: ['Creatine 5g'] },
+    { time: 'قبل النوم', type: 'night', items: ['Magnesium Glycinate 350mg'] },
+  ],
+  afternoon: [
+    { time: 'مع الفطار', type: 'morning', items: ['Vitamin D 5000IU', 'Vitamin B12 1000mcg', 'Omega-3 2-3g', 'Zinc 25mg', 'Ginseng 500mg', 'Ashwagandha 500mg'] },
+    { time: '45-60 دقيقة قبل التمرين', type: 'pre', items: ['L-Citrulline 7g', 'Power Max', 'Maca Root 2g'] },
+    { time: 'بعد التمرين فوراً', type: 'post', items: ['Creatine 5g'] },
+    { time: 'قبل النوم', type: 'night', items: ['Magnesium Glycinate 350mg'] },
+  ],
+  evening: [
+    { time: 'مع الفطار', type: 'morning', items: ['Vitamin D 5000IU', 'Vitamin B12 1000mcg', 'Omega-3 2-3g', 'Zinc 25mg', 'Ashwagandha 500mg'] },
+    { time: 'الضهر', type: 'morning', items: ['Ginseng 500mg', 'Maca Root 2g'] },
+    { time: '45-60 دقيقة قبل التمرين', type: 'pre', items: ['L-Citrulline 7g', 'Power Max'] },
+    { time: 'بعد التمرين فوراً', type: 'post', items: ['Creatine 5g'] },
+    { time: 'قبل النوم', type: 'night', items: ['Magnesium Glycinate 350mg'] },
+  ],
+};
+
+const quotes = [
+  'الجسم بيتحول كل يوم — الفرق بس إنك تظهر أو لا.',
+  'مفيش راحة تستاهلها من غير تعب استحقها.',
+  'الإرادة عضلة زي أي عضلة تانية — اتمرن عليها.',
+  'الكارش مش هيروح في يوم — بس كل يوم بتتمرن بتضغط عليه.',
+  'قوتك مش بس في الجيم — في ثباتك على النظام.',
+  'أحسن وقت تبدأ كان امبارح. ثاني أحسن وقت هو دلوقتي.',
+];
+
+const phases = [
+  { weeks: '1–2', name: 'Foundation', desc: 'اتعلم الحركات كويس. وزن متوسط. ركز على الفورم.' },
+  { weeks: '3–4', name: 'Load', desc: 'زيد 2.5–5 كيلو على كل compound كل أسبوع.' },
+  { weeks: '5–6', name: 'Volume', desc: 'زيد set لكل تمرين أساسي — نفس الوزن.' },
+  { weeks: '7–8', name: 'Intensify', desc: 'Drop set على آخر set عزل. قلل الراحة 15 ثانية.' },
+];
+
+// ========== STATE ==========
+let state = {
+  streak: parseInt(localStorage.getItem('streak') || '1'),
+  workoutDays: JSON.parse(localStorage.getItem('workoutDays') || '[]'),
+  todayExercises: JSON.parse(localStorage.getItem('todayEx') || '[]'),
+  weightLog: JSON.parse(localStorage.getItem('weightLog') || '[{"w":74,"d":"اليوم"}]'),
+  suppTaken: JSON.parse(localStorage.getItem('suppTaken') || '{}'),
+  mealDone: JSON.parse(localStorage.getItem('mealDone') || '[]'),
+  alarmToggles: JSON.parse(localStorage.getItem('alarmToggles') || '{}'),
+  workoutTime: localStorage.getItem('workoutTime') || '07:00',
+  timerVal: 90,
+  timerRunning: false,
+  timerInterval: null,
+  currentPhase: parseInt(localStorage.getItem('currentPhase') || '0'),
+};
+
+function save() {
+  localStorage.setItem('streak', state.streak);
+  localStorage.setItem('workoutDays', JSON.stringify(state.workoutDays));
+  localStorage.setItem('todayEx', JSON.stringify(state.todayExercises));
+  localStorage.setItem('weightLog', JSON.stringify(state.weightLog));
+  localStorage.setItem('suppTaken', JSON.stringify(state.suppTaken));
+  localStorage.setItem('mealDone', JSON.stringify(state.mealDone));
+  localStorage.setItem('alarmToggles', JSON.stringify(state.alarmToggles));
+  localStorage.setItem('workoutTime', state.workoutTime);
+  localStorage.setItem('currentPhase', state.currentPhase);
+}
+
+// ========== HELPERS ==========
+function getTodayIndex() {
+  const d = new Date().getDay();
+  return d === 0 ? 6 : d - 1;
+}
+
+function showNotif(msg) {
+  const n = document.getElementById('notif');
+  n.textContent = msg;
+  n.classList.add('show');
+  setTimeout(() => n.classList.remove('show'), 2500);
+}
+
+// ========== SECTIONS ==========
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ========== HOME ==========
+function renderHome() {
+  const todayIdx = getTodayIndex();
+  const today = split[todayIdx];
+
+  document.getElementById('todayDayName').textContent = today.day;
+  document.getElementById('todayDay').textContent = today.name;
+  document.getElementById('todayFocus').textContent = today.focus;
+
+  document.getElementById('streakNum').textContent = state.streak;
+  document.getElementById('quoteText').textContent = quotes[Math.floor(Math.random() * quotes.length)];
+
+  // Today exercises
+  const list = document.getElementById('todayExercises');
+  list.innerHTML = '';
+  if (today.exercises.length === 0) {
+    list.innerHTML = '<li style="padding:12px 0;color:var(--muted);font-size:13px">يوم راحة — استرح وكُل بروتين 💤</li>';
+  }
+  today.exercises.forEach((ex, i) => {
+    const done = state.todayExercises.includes(i);
+    const li = document.createElement('li');
+    li.className = 'exercise-item' + (done ? ' done' : '');
+    li.innerHTML = `
+      <div class="exercise-check">${done ? '✓' : ''}</div>
+      <div class="exercise-name">${ex.name}</div>
+      <div class="exercise-meta">${ex.meta}</div>
+    `;
+    li.onclick = () => toggleExercise(i, today.exercises.length);
+    list.appendChild(li);
+  });
+
+  updateProgress(today.exercises.length);
+
+  // Week dots
+  const dotsEl = document.getElementById('weekDots');
+  const labelsEl = document.getElementById('weekLabels');
+  dotsEl.innerHTML = '';
+  labelsEl.innerHTML = '';
+  split.forEach((d, i) => {
+    const dot = document.createElement('div');
+    const done = state.workoutDays.includes(i);
+    dot.className = 'week-dot' + (done ? ' done' : (i === todayIdx ? ' today' : ''));
+    dotsEl.appendChild(dot);
+    const lbl = document.createElement('div');
+    lbl.className = 'chart-label';
+    lbl.textContent = d.day.slice(0, 3);
+    labelsEl.appendChild(lbl);
+  });
+}
+
+function toggleExercise(i, total) {
+  const idx = state.todayExercises.indexOf(i);
+  if (idx === -1) state.todayExercises.push(i);
+  else state.todayExercises.splice(idx, 1);
+
+  if (state.todayExercises.length === total && total > 0) {
+    const todayIdx = getTodayIndex();
+    if (!state.workoutDays.includes(todayIdx)) {
+      state.workoutDays.push(todayIdx);
+      state.streak++;
+      showNotif('🔥 تمرين اليوم اتكمّل! Streak: ' + state.streak);
+    }
+  }
+  save();
+  renderHome();
+}
+
+function updateProgress(total) {
+  if (total === 0) return;
+  const done = state.todayExercises.length;
+  const pct = Math.round((done / total) * 100);
+  document.getElementById('workoutProgress').style.width = pct + '%';
+  document.getElementById('doneCount').textContent = done + ' تمارين مكتملة';
+  document.getElementById('progressPct').textContent = pct + '%';
+}
+
+// ========== TIMER ==========
+function setTimer(s) {
+  if (state.timerRunning) return;
+  state.timerVal = s;
+  updateTimerDisplay();
+}
+
+function updateTimerDisplay() {
+  const m = Math.floor(state.timerVal / 60);
+  const s = state.timerVal % 60;
+  document.getElementById('timerDisplay').textContent =
+    String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+}
+
+function toggleTimer() {
+  if (state.timerRunning) {
+    clearInterval(state.timerInterval);
+    state.timerRunning = false;
+    document.getElementById('timerStartBtn').textContent = '▶ ابدأ';
+    state.timerVal = 90;
+    updateTimerDisplay();
+  } else {
+    state.timerRunning = true;
+    document.getElementById('timerStartBtn').textContent = '⏹ وقف';
+    state.timerInterval = setInterval(() => {
+      state.timerVal--;
+      updateTimerDisplay();
+      if (state.timerVal <= 0) {
+        clearInterval(state.timerInterval);
+        state.timerRunning = false;
+        document.getElementById('timerStartBtn').textContent = '▶ ابدأ';
+        document.getElementById('timerDisplay').textContent = 'GO! 💥';
+        document.getElementById('timerDisplay').style.color = '#4CAF88';
+        setTimeout(() => {
+          state.timerVal = 90;
+          updateTimerDisplay();
+          document.getElementById('timerDisplay').style.color = 'var(--gold)';
+        }, 2000);
+      }
+    }, 1000);
+  }
+}
+
+// ========== TRAINING ==========
+function renderTraining() {
+  const todayIdx = getTodayIndex();
+  const grid = document.getElementById('splitGrid');
+  grid.innerHTML = '';
+  split.forEach((d, i) => {
+    const div = document.createElement('div');
+    div.className = 'split-day' + (i === todayIdx ? ' today' : '');
+    div.innerHTML = `
+      <div class="split-day-num">${i + 1}</div>
+      <div class="split-day-info">
+        <div class="split-day-name">${d.day} — ${d.name}</div>
+        <div class="split-day-sub">${d.focus}</div>
+      </div>
+      <div class="split-day-icon">${d.icon}</div>
+    `;
+    grid.appendChild(div);
+  });
+
+  const phaseEl = document.getElementById('phaseInfo');
+  phaseEl.innerHTML = phases.map(p =>
+    `<div style="margin-bottom:10px;padding:10px;background:var(--card2);border-radius:8px;border:1px solid var(--border)">
+      <div style="color:var(--gold);font-weight:700;font-size:13px">أسبوع ${p.weeks} — ${p.name}</div>
+      <div style="font-size:12px;margin-top:4px">${p.desc}</div>
+    </div>`
+  ).join('');
+}
+
+// ========== NUTRITION ==========
+function renderNutrition() {
+  const list = document.getElementById('mealList');
+  list.innerHTML = '';
+  meals.forEach((m, i) => {
+    const done = state.mealDone.includes(i);
+    const div = document.createElement('div');
+    div.className = 'meal-card' + (done ? ' done' : '');
+    div.innerHTML = `
+      <div class="meal-time">${m.time}</div>
+      <div class="meal-info">
+        <div class="meal-name">${done ? '✓ ' : ''}${m.name}</div>
+        <div class="meal-detail">${m.detail}</div>
+        <div style="font-size:11px;color:var(--gold-dim);margin-top:3px">${m.cal} كالوري</div>
+      </div>
+      <div class="meal-macros">${m.macros}</div>
+    `;
+    div.onclick = () => {
+      const idx = state.mealDone.indexOf(i);
+      if (idx === -1) state.mealDone.push(i);
+      else state.mealDone.splice(idx, 1);
+      save();
+      renderNutrition();
+      showNotif(done ? '↩ تم إلغاء الوجبة' : '✓ وجبة مسجّلة!');
+    };
+    list.appendChild(div);
+  });
+}
+
+function updateMacros() {
+  const cal = document.getElementById('editCal').value;
+  const p = document.getElementById('editP').value;
+  const c = document.getElementById('editC').value;
+  const f = document.getElementById('editF').value;
+  document.getElementById('calTarget').textContent = parseInt(cal).toLocaleString();
+  document.getElementById('macroP').textContent = p;
+  document.getElementById('macroC').textContent = c;
+  document.getElementById('macroF').textContent = f;
+  showNotif('✓ تم حفظ الماكروز!');
+}
+
+// ========== SUPPLEMENTS ==========
+function renderSupplements() {
+  updateSuppSchedule();
+}
+
+function updateSuppSchedule() {
+  const wt = document.getElementById('workoutTime').value;
+  const schedule = suppSchedules[wt];
+  const timeline = document.getElementById('suppTimeline');
+  timeline.innerHTML = '';
+  schedule.forEach(block => {
+    const div = document.createElement('div');
+    div.className = 'supp-time-block';
+    div.innerHTML = `<div class="supp-time-label">${block.time}</div>`;
+    const pills = document.createElement('div');
+    pills.className = 'supp-pills';
+    block.items.forEach(item => {
+      const key = item.replace(/\s/g, '_');
+      const taken = state.suppTaken[key];
+      const pill = document.createElement('div');
+      pill.className = `supp-pill ${block.type}${taken ? ' taken' : ''}`;
+      pill.textContent = (taken ? '✓ ' : '') + item;
+      pill.onclick = () => {
+        state.suppTaken[key] = !taken;
+        save();
+        renderSupplements();
+        showNotif(taken ? '↩ تم إلغاء المكمل' : '✓ ' + item + ' — تم!');
+      };
+      pills.appendChild(pill);
+    });
+    div.appendChild(pills);
+    timeline.appendChild(div);
+  });
+}
+
+// ========== STATS ==========
+function renderStats() {
+  const log = state.weightLog;
+  document.getElementById('currentWeight').textContent = log[log.length - 1].w;
+  document.getElementById('totalSessions').textContent = state.workoutDays.length;
+  document.getElementById('weekSessions').textContent = Math.min(state.workoutDays.length, 6);
+
+  const w = parseFloat(log[log.length - 1].w);
+  const bmi = (w / (1.74 * 1.74)).toFixed(1);
+  document.getElementById('bmi').textContent = bmi;
+
+  // Chart
+  const chart = document.getElementById('weightChart');
+  const labelsEl = document.getElementById('chartLabels');
+  chart.innerHTML = '';
+  labelsEl.innerHTML = '';
+  const last7 = log.slice(-7);
+  const maxW = Math.max(...last7.map(l => l.w)) + 1;
+  const minW = Math.min(...last7.map(l => l.w)) - 1;
+  last7.forEach((entry, i) => {
+    const bar = document.createElement('div');
+    bar.className = 'chart-bar' + (i === last7.length - 1 ? ' today' : '');
+    const pct = ((entry.w - minW) / (maxW - minW)) * 100;
+    bar.innerHTML = `<div class="chart-bar-fill" style="height:${Math.max(pct, 10)}%"></div>`;
+    chart.appendChild(bar);
+    const lbl = document.createElement('div');
+    lbl.className = 'chart-label';
+    lbl.textContent = entry.w;
+    labelsEl.appendChild(lbl);
+  });
+
+  // History
+  const hist = document.getElementById('weightHistory');
+  hist.innerHTML = log.slice(-5).reverse().map(e => `📌 ${e.w} kg — ${e.d}`).join('<br>');
+}
+
+function logWeight() {
+  const w = parseFloat(document.getElementById('newWeight').value);
+  if (!w) return;
+  const today = new Date().toLocaleDateString('ar-EG', { day: 'numeric', month: 'short' });
+  state.weightLog.push({ w, d: today });
+  save();
+  renderStats();
+  showNotif('✓ تم تسجيل ' + w + ' kg');
+  document.getElementById('newWeight').value = '';
+}
+
+// ========== ALARMS ==========
+const baseAlarms = [
+  { name: 'الفطار + مكملات الصبح', sub: 'Vitamin D, B12, Omega-3, Zinc, Ginseng', offset: 0 },
+  { name: 'مكملات ما قبل التمرين', sub: 'Citrulline, Power Max, Ashwagandha, Maca', offset: 20 },
+  { name: 'وقت التمرين 🏋️', sub: 'يلا — المعدة جاهزة والمكملات شغالة', offset: 45 },
+  { name: 'كرياتين بعد التمرين', sub: '5g في ميه فوراً', offset: 90 },
+  { name: 'الغدا', sub: 'فراخ + أرز أو بطاطس', offset: 240 },
+  { name: 'العشا', sub: 'فراخ أو سردين + سلطة', offset: 720 },
+  { name: 'Magnesium قبل النوم', sub: '350mg — مهم للريكفري والنوم', offset: -60 },
+];
+
+function renderAlarms() {
+  const list = document.getElementById('alarmList');
+  list.innerHTML = '';
+  const [wh, wm] = state.workoutTime.split(':').map(Number);
+  baseAlarms.forEach((a, i) => {
+    let totalMin = wh * 60 + wm + a.offset;
+    if (totalMin < 0) totalMin += 24 * 60;
+    const h = Math.floor(totalMin / 60) % 24;
+    const m = totalMin % 60;
+    const timeStr = String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0');
+    const on = state.alarmToggles[i] !== false;
+    const div = document.createElement('div');
+    div.className = 'alarm-card';
+    div.innerHTML = `
+      <div class="alarm-time">${timeStr}</div>
+      <div class="alarm-label">
+        <div class="alarm-name">${a.name}</div>
+        <div class="alarm-sub">${a.sub}</div>
+      </div>
+      <div class="toggle ${on ? 'on' : ''}" onclick="toggleAlarm(${i}, this)"></div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+function toggleAlarm(i, el) {
+  const current = state.alarmToggles[i] !== false;
+  state.alarmToggles[i] = !current;
+  el.classList.toggle('on', !current);
+  save();
+  showNotif(!current ? '🔔 تنبيه مفعّل' : '🔕 تنبيه متوقف');
+}
+
+function updateAlarmTimes() {
+  state.workoutTime = document.getElementById('workoutTimeInput').value;
+  save();
+  renderAlarms();
+  showNotif('✓ تم تحديث جدول التنبيهات');
+}
+
+// ========== INIT ==========
+function init() {
+  renderHome();
+  renderTraining();
+  renderNutrition();
+  renderSupplements();
+  renderStats();
+  renderAlarms();
+  updateTimerDisplay();
+}
+
+init();
+</script>
+</body>
+</html>
